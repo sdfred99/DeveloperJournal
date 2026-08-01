@@ -22,7 +22,8 @@ app.get("/", (req, res) => {
             <textarea name="progress" rows="5"></textarea>
 
             <br>
-            <button>Save</button>
+            <br>
+            <button type="submit">Save</button>
         </form>
 
     `);
@@ -34,8 +35,7 @@ app.post("/", async (req, res) => {
         .toISOString()
         .split("T")[0];
 
-    const entry = `
-# ${today}
+    const entry = `# ${today}
 
 ## Worked On
 
@@ -44,18 +44,34 @@ ${req.body.worked}
 ## Learned
 
 ${req.body.learned}
+
+## Personal Project Progress 
+
+${req.body.progress}
 `;
 
-    fs.writeFileSync(
-        `journal/${today}.md`,
-        entry
-    );
+    const filename = `journal/${today}.md`;
 
-    await git.add(".");
-    await git.commit(`Journal ${today}`);
-    await git.push();
+    fs.writeFileSync(filename, entry);
 
-    res.send("Saved!");
+    try {
+        await git.add(".");
+        await git.commit(`Journal entry ${today}`);
+        await git.push();
+
+        res.send(`
+            <h1>Saved!</h1>
+            <p>Committed and pushed to GitHub.</p>
+        `);
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).send(`
+            <h1>Error</h1>
+            <pre>${error}</pre>
+        `);
+    }
 });
 
 
