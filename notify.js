@@ -1,5 +1,5 @@
 const topic = "seth-dev-journal-uh8i0ppq";
-const journalUrl = "http://100.84.89.106.3006";
+const journalUrl = "http://100.84.89.106:3006";
 
 async function sendReminder() {
     try {
